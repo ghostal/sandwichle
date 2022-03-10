@@ -27,6 +27,8 @@ class GameController extends Controller
 
     public function start(int $puzzleId = null)
     {
+        sleep(3);
+
         if (is_null($puzzleId)) {
             $puzzle = $this->puzzleList->getRandom();
         } else {

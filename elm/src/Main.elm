@@ -119,6 +119,7 @@ view model =
         Loading ->
             div [ class "container" ]
                 [ h1 [] [ text "Sandwichle" ]
+                , div [] [ img [src "loading.gif"] [] ]
                 , div [] [text "Loading puzzle..."]
                 ]
         FailedToLoad error ->
