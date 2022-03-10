@@ -65,6 +65,8 @@ class GameController extends Controller
         Puzzle $puzzle,
         string $guess,
     ): GuessResult {
+        sleep(3);
+
         try {
             return $this
                 ->guessResultFactory
