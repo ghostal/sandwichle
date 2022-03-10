@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sandwichle</title>
+    <style>
+        .box {
+            background: #eee;
+            width: 40px;
+            height: 40px;
+            border: 1px #ddd solid;
+            display: inline-block;
+            margin: 2px;
+            text-align: center;
+            font-family: sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            line-height: 40px;
+            box-sizing: border-box;
+        }
+        .active {
+            border-color: #777;
+        }
+        .empty {
+            color: #cfcfcf;
+        }
+        .letter {
+            background: #fc0;
+            border: 1px #da0 solid;
+        }
+        .letter-spot {
+            background: #0c0;
+            border: 1px #0a0 solid;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app"></div>
+
+<script src="whatever.js"></script>
+<script>
+    Elm.Main.init({node: document.getElementById("app")});
+</script>
+</body>
+</html>
