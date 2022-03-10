@@ -119,7 +119,11 @@ class PuzzleList
 
     public function getRandom(): Puzzle
     {
-        return $this->buildPuzzle(Arr::random(static::$puzzles));
+        $puzzleWord = env('APP_ENV', 'local') === 'test'
+            ? 'lettuce'
+            : Arr::random(static::$puzzles);
+
+        return $this->buildPuzzle($puzzleWord);
     }
 
     public function getSpecific(int $puzzleId): Puzzle
