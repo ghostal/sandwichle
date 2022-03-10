@@ -5148,12 +5148,14 @@ var $author$project$Main$LetterGuess = F2(
 	function (letter, result) {
 		return {letter: letter, result: result};
 	});
-var $author$project$Main$Ready = {$: 'Ready'};
+var $author$project$Main$Ready = function (a) {
+	return {$: 'Ready', a: a};
+};
 var $author$project$Main$RightLetter = {$: 'RightLetter'};
 var $author$project$Main$RightLetterRightPlace = {$: 'RightLetterRightPlace'};
 var $author$project$Main$Wrong = {$: 'Wrong'};
 var $author$project$Main$initialModel = {
-	appState: $author$project$Main$Ready,
+	appState: $author$project$Main$Ready(6),
 	currentGuess: '',
 	guesses: _List_fromArray(
 		[
@@ -5669,11 +5671,11 @@ var $elm$core$String$concat = function (strings) {
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$Main$wordLength = 6;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var _v0 = model.appState;
 		if (_v0.$ === 'Ready') {
+			var wordLength = _v0.a;
 			switch (msg.$) {
 				case 'NoOp':
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -5681,7 +5683,7 @@ var $author$project$Main$update = F2(
 					var _char = msg.a;
 					return (_Utils_cmp(
 						$elm$core$String$length(model.currentGuess),
-						$author$project$Main$wordLength) < 0) ? _Utils_Tuple2(
+						wordLength) < 0) ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
@@ -5704,7 +5706,7 @@ var $author$project$Main$update = F2(
 				default:
 					return _Utils_eq(
 						$elm$core$String$length(model.currentGuess),
-						$author$project$Main$wordLength) ? _Utils_Tuple2(
+						wordLength) ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{currentGuess: ''}),
@@ -5770,13 +5772,15 @@ var $author$project$Main$viewEmptyBox = A2(
 			$elm$html$Html$Attributes$class('box')
 		]),
 	_List_Nil);
-var $author$project$Main$viewEmptyRow = A2(
-	$elm$html$Html$div,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('row')
-		]),
-	A2($elm$core$List$repeat, $author$project$Main$wordLength, $author$project$Main$viewEmptyBox));
+var $author$project$Main$viewEmptyRow = function (wordLength) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row')
+			]),
+		A2($elm$core$List$repeat, wordLength, $author$project$Main$viewEmptyBox));
+};
 var $author$project$Main$viewLetterGuessBox = function (letterGuess) {
 	var classes = function () {
 		var _v0 = letterGuess.result;
@@ -5827,73 +5831,86 @@ var $author$project$Main$viewInputBox = function (_char) {
 				$elm$core$String$fromChar(_char))
 			]));
 };
-var $author$project$Main$viewInputRow = function (currentGuess) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('row')
-			]),
-		$elm$core$List$concat(
+var $author$project$Main$viewInputRow = F2(
+	function (currentGuess, wordLength) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('row')
+				]),
+			$elm$core$List$concat(
+				_List_fromArray(
+					[
+						A2(
+						$elm$core$List$map,
+						$author$project$Main$viewInputBox,
+						$elm$core$String$toList(currentGuess)),
+						_Utils_eq(
+						$elm$core$String$length(currentGuess),
+						wordLength) ? _List_Nil : A2(
+						$elm$core$List$repeat,
+						wordLength - $elm$core$String$length(currentGuess),
+						A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('box active empty')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('?')
+								])))
+					])));
+	});
+var $author$project$Main$view = function (model) {
+	var _v0 = model.appState;
+	if (_v0.$ === 'Ready') {
+		var wordLength = _v0.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('container')
+				]),
 			_List_fromArray(
 				[
 					A2(
-					$elm$core$List$map,
-					$author$project$Main$viewInputBox,
-					$elm$core$String$toList(currentGuess)),
-					_Utils_eq(
-					$elm$core$String$length(currentGuess),
-					$author$project$Main$wordLength) ? _List_Nil : A2(
-					$elm$core$List$repeat,
-					$author$project$Main$wordLength - $elm$core$String$length(currentGuess),
-					A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('box active empty')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('?')
-							])))
-				])));
-};
-var $author$project$Main$view = function (model) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('container')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$h1,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Sandwichle')
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('board')
-					]),
-				$elm$core$List$concat(
+					$elm$html$Html$h1,
+					_List_Nil,
 					_List_fromArray(
 						[
-							A2($elm$core$List$map, $author$project$Main$viewGuessRow, model.guesses),
-							($author$project$Main$remainingGuesses(model) > 0) ? _List_fromArray(
+							$elm$html$Html$text('Sandwichle')
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('board')
+						]),
+					$elm$core$List$concat(
+						_List_fromArray(
 							[
-								$author$project$Main$viewInputRow(model.currentGuess)
-							]) : _List_Nil,
-							($author$project$Main$remainingGuesses(model) > 1) ? A2(
-							$elm$core$List$repeat,
-							$author$project$Main$remainingGuesses(model) - 1,
-							$author$project$Main$viewEmptyRow) : _List_Nil
-						])))
-			]));
+								A2($elm$core$List$map, $author$project$Main$viewGuessRow, model.guesses),
+								($author$project$Main$remainingGuesses(model) > 0) ? _List_fromArray(
+								[
+									A2($author$project$Main$viewInputRow, model.currentGuess, wordLength)
+								]) : _List_Nil,
+								($author$project$Main$remainingGuesses(model) > 1) ? A2(
+								$elm$core$List$repeat,
+								$author$project$Main$remainingGuesses(model) - 1,
+								$author$project$Main$viewEmptyRow(wordLength)) : _List_Nil
+							])))
+				]));
+	} else {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Not Yet Implemented')
+				]));
+	}
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{

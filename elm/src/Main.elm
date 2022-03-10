@@ -27,7 +27,7 @@ type alias Guess = List LetterGuess
 type AppState
     = Loaded
     | Setup
-    | Ready
+    | Ready Int
     | CheckingGuess
     | Lost
     | Won
@@ -39,10 +39,9 @@ type alias Model =
     }
 
 totalGuesses = 6
-wordLength = 6
 
 initialModel =
-    { appState = Ready
+    { appState = Ready 6
     , guesses =
         [
             [ LetterGuess 'P' RightLetterRightPlace
@@ -70,7 +69,7 @@ remainingGuesses model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case model.appState of
-        Ready ->
+        Ready wordLength ->
             case msg of
                 NoOp ->
                     (model, Cmd.none)
@@ -98,18 +97,22 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ h1 [] [ text "Sandwichle" ]
-        , div
-            [ class "board" ]
-            (
-                List.concat
-                    [ (List.map viewGuessRow (model.guesses))
-                    , if remainingGuesses model > 0 then [viewInputRow model.currentGuess] else []
-                    , if remainingGuesses model  > 1 then List.repeat (remainingGuesses model  - 1) viewEmptyRow else []
-                    ]
-            )
-        ]
+    case model.appState of
+        Ready wordLength ->
+            div [ class "container" ]
+                [ h1 [] [ text "Sandwichle" ]
+                , div
+                    [ class "board" ]
+                    (
+                        List.concat
+                            [ (List.map viewGuessRow (model.guesses))
+                            , if remainingGuesses model > 0 then [viewInputRow model.currentGuess wordLength] else []
+                            , if remainingGuesses model  > 1 then List.repeat (remainingGuesses model  - 1) (viewEmptyRow wordLength) else []
+                            ]
+                    )
+                ]
+        _ ->
+            div [] [text "Not Yet Implemented"]
 
 viewGuessRow : Guess -> Html Msg
 viewGuessRow letterGuesses =
@@ -128,8 +131,8 @@ viewLetterGuessBox letterGuess =
     in
         div [ class classes ] [ text (String.fromChar letterGuess.letter) ]
 
-viewInputRow : String -> Html Msg
-viewInputRow currentGuess =
+viewInputRow : String -> Int -> Html Msg
+viewInputRow currentGuess wordLength =
     div [ class "row" ] (List.concat
         [ (List.map viewInputBox (String.toList currentGuess))
         , if String.length currentGuess == wordLength then
@@ -144,8 +147,8 @@ viewInputBox : Char -> Html Msg
 viewInputBox char =
     div [ class "box active" ] [ text (String.fromChar char) ]
 
-viewEmptyRow: Html Msg
-viewEmptyRow =
+viewEmptyRow: Int -> Html Msg
+viewEmptyRow wordLength =
     div [ class "row" ] (List.repeat wordLength viewEmptyBox)
 
 viewEmptyBox : Html Msg
