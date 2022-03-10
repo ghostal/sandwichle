@@ -6820,13 +6820,21 @@ var $author$project$Main$showBoard = F2(
 				_List_fromArray(
 					[
 						A2($elm$core$List$map, $author$project$Main$viewGuessRow, model.guesses),
-						($author$project$Main$remainingGuesses(model) > 0) ? _List_fromArray(
+						((($author$project$Main$remainingGuesses(model) > 0) && _Utils_eq(
+						model.appState,
+						$author$project$Main$Ready(puzzle))) || _Utils_eq(
+						model.appState,
+						$author$project$Main$CheckingGuess(puzzle))) ? _List_fromArray(
 						[
 							A2($author$project$Main$viewInputRow, model.currentGuess, puzzle.wordLength)
 						]) : _List_Nil,
 						($author$project$Main$remainingGuesses(model) > 1) ? A2(
 						$elm$core$List$repeat,
-						$author$project$Main$remainingGuesses(model) - 1,
+						$author$project$Main$remainingGuesses(model) - ((_Utils_eq(
+							model.appState,
+							$author$project$Main$Ready(puzzle)) || _Utils_eq(
+							model.appState,
+							$author$project$Main$CheckingGuess(puzzle))) ? 1 : 0),
 						$author$project$Main$viewEmptyRow(puzzle.wordLength)) : _List_Nil
 					])));
 	});
@@ -6956,6 +6964,45 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Your guess is being checked!')
+									]))
+							]))
+					]));
+		case 'Won':
+			var puzzle = _v0.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('container')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Sandwichle')
+							])),
+						A2($author$project$Main$showBoard, model, puzzle),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('winner.gif')
+									]),
+								_List_Nil),
+								A2(
+								$elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('You won! Outstanding! Time to celebrate with a sandwich!')
 									]))
 							]))
 					]));

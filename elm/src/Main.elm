@@ -143,6 +143,16 @@ view model =
                 , div [] [text "Your guess is being checked!"]
                 ]
                 ]
+
+        Won puzzle ->
+            div [ class "container" ]
+                [ h1 [] [ text "Sandwichle" ]
+                , showBoard model puzzle
+                , div [] [ img [src "winner.gif"] []
+                , div [] [text "You won! Outstanding! Time to celebrate with a sandwich!"]
+                ]
+                ]
+
         _ ->
             div [] [text "Not Yet Implemented"]
 
@@ -153,8 +163,8 @@ showBoard model puzzle =
         (
             List.concat
                 [ (List.map viewGuessRow (model.guesses))
-                , if remainingGuesses model > 0 then [viewInputRow model.currentGuess puzzle.wordLength] else []
-                , if remainingGuesses model > 1 then List.repeat (remainingGuesses model  - 1) (viewEmptyRow puzzle.wordLength) else []
+                , if remainingGuesses model > 0 && model.appState == Ready puzzle || model.appState == CheckingGuess puzzle then [viewInputRow model.currentGuess puzzle.wordLength] else []
+                , if remainingGuesses model > 1 then List.repeat (remainingGuesses model - (if model.appState == Ready puzzle || model.appState == CheckingGuess puzzle then 1 else 0)) (viewEmptyRow puzzle.wordLength) else []
                 ]
         )
 
