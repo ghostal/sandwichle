@@ -38,6 +38,7 @@ class GuessResultFactory
                 $result[$i] = LetterResult::wrongLetter($guess[$i]);
             } else {
                 $result[$i] = LetterResult::rightLetterWrongSpot($guess[$i]);
+                $puzzleWord[$otherPosition] = null;
             }
         }
 
