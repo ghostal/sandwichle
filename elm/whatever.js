@@ -6453,6 +6453,9 @@ var $author$project$Main$CheckingGuess = function (a) {
 var $author$project$Main$FailedToLoad = function (a) {
 	return {$: 'FailedToLoad', a: a};
 };
+var $author$project$Main$Lost = function (a) {
+	return {$: 'Lost', a: a};
+};
 var $author$project$Main$Ready = function (a) {
 	return {$: 'Ready', a: a};
 };
@@ -6486,6 +6489,10 @@ var $elm$core$Basics$negate = function (n) {
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$totalGuesses = 6;
+var $author$project$Main$remainingGuesses = function (model) {
+	return $author$project$Main$totalGuesses - $elm$core$List$length(model.guesses);
+};
 var $author$project$Main$GuessResultReceived = function (a) {
 	return {$: 'GuessResultReceived', a: a};
 };
@@ -6644,7 +6651,7 @@ var $author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									appState: $author$project$Main$isWinningGuess(guessResult) ? $author$project$Main$Won(puzzle) : $author$project$Main$Ready(puzzle),
+									appState: $author$project$Main$isWinningGuess(guessResult) ? $author$project$Main$Won(puzzle) : (($author$project$Main$remainingGuesses(model) === 1) ? $author$project$Main$Lost(puzzle) : $author$project$Main$Ready(puzzle)),
 									currentGuess: '',
 									guesses: A2(
 										$elm$core$List$append,
@@ -6683,10 +6690,6 @@ var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$core$List$concat = function (lists) {
 	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
-var $author$project$Main$totalGuesses = 6;
-var $author$project$Main$remainingGuesses = function (model) {
-	return $author$project$Main$totalGuesses - $elm$core$List$length(model.guesses);
 };
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
@@ -7007,12 +7010,43 @@ var $author$project$Main$view = function (model) {
 							]))
 					]));
 		default:
+			var puzzle = _v0.a;
 			return A2(
 				$elm$html$Html$div,
-				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Not Yet Implemented')
+						$elm$html$Html$Attributes$class('container')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h1,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Sandwichle')
+							])),
+						A2($author$project$Main$showBoard, model, puzzle),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('loser.gif')
+									]),
+								_List_Nil),
+								A2(
+								$elm$html$Html$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Sorry, champ. I\'m afraid you didn\'t win this time. Can I recommend a commiseratory sandwich?')
+									]))
+							]))
 					]));
 	}
 };

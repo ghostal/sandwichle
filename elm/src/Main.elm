@@ -38,7 +38,7 @@ type AppState
     | FailedToLoad Http.Error
     | Ready Puzzle
     | CheckingGuess Puzzle
-    | Lost
+    | Lost Puzzle
     | Won Puzzle
 
 type alias Model =
@@ -100,7 +100,18 @@ update msg model =
                 GuessResultReceived result ->
                     case result of
                         Ok guessResult ->
-                            ({ model | currentGuess = "", guesses = List.append model.guesses [guessResult], appState = if isWinningGuess guessResult then Won puzzle else Ready puzzle }, Cmd.none)
+                            ({ model
+                            | currentGuess = ""
+                            , guesses = List.append model.guesses [guessResult]
+                            , appState =
+                                if isWinningGuess guessResult then
+                                    Won puzzle
+                                else
+                                    if remainingGuesses model == 1 then
+                                        Lost puzzle
+                                    else
+                                        Ready puzzle
+                            }, Cmd.none)
                         Err errorMessage ->
                             ({ model | appState = Ready puzzle }, Cmd.none)
                 _ ->
@@ -153,8 +164,14 @@ view model =
                 ]
                 ]
 
-        _ ->
-            div [] [text "Not Yet Implemented"]
+        Lost puzzle ->
+            div [ class "container" ]
+                [ h1 [] [ text "Sandwichle" ]
+                , showBoard model puzzle
+                , div [] [ img [src "loser.gif"] []
+                , div [] [text "Sorry, champ. I'm afraid you didn't win this time. Have a rejuvenating sandwich and try again!"]
+                ]
+                ]
 
 showBoard : Model -> Puzzle -> Html Msg
 showBoard model puzzle =
