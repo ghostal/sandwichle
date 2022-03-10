@@ -6456,6 +6456,9 @@ var $author$project$Main$FailedToLoad = function (a) {
 var $author$project$Main$Ready = function (a) {
 	return {$: 'Ready', a: a};
 };
+var $author$project$Main$Won = function (a) {
+	return {$: 'Won', a: a};
+};
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -6466,6 +6469,17 @@ var $elm$core$List$append = F2(
 	});
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
+};
+var $author$project$Main$RightLetterRightPlace = {$: 'RightLetterRightPlace'};
+var $author$project$Main$isWinningGuess = function (guessResult) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (letterGuess, carry) {
+				return carry && _Utils_eq(letterGuess.result, $author$project$Main$RightLetterRightPlace);
+			}),
+		true,
+		guessResult);
 };
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -6481,7 +6495,6 @@ var $author$project$Main$LetterGuess = F2(
 	});
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $author$project$Main$RightLetter = {$: 'RightLetter'};
-var $author$project$Main$RightLetterRightPlace = {$: 'RightLetterRightPlace'};
 var $author$project$Main$WrongLetter = {$: 'WrongLetter'};
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $author$project$Main$guessResultLetterResultDecoder = function (string) {
@@ -6609,21 +6622,15 @@ var $author$project$Main$update = F2(
 								}),
 							$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 					case 'EnterKey':
-						if (_Utils_eq(
+						return _Utils_eq(
 							$elm$core$String$length(model.currentGuess),
-							puzzle.wordLength)) {
-							var theGuess = model.currentGuess;
-							return _Utils_Tuple2(
-								_Utils_update(
-									model,
-									{
-										appState: $author$project$Main$CheckingGuess(puzzle),
-										currentGuess: ''
-									}),
-								A2($author$project$Main$submitGuess, puzzle, theGuess));
-						} else {
-							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-						}
+							puzzle.wordLength) ? _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									appState: $author$project$Main$CheckingGuess(puzzle)
+								}),
+							A2($author$project$Main$submitGuess, puzzle, model.currentGuess)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 					default:
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -6637,7 +6644,8 @@ var $author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									appState: $author$project$Main$Ready(puzzle),
+									appState: $author$project$Main$isWinningGuess(guessResult) ? $author$project$Main$Won(puzzle) : $author$project$Main$Ready(puzzle),
+									currentGuess: '',
 									guesses: A2(
 										$elm$core$List$append,
 										model.guesses,
@@ -6670,12 +6678,12 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$img = _VirtualDom_node('img');
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
 var $author$project$Main$totalGuesses = 6;
 var $author$project$Main$remainingGuesses = function (model) {
 	return $author$project$Main$totalGuesses - $elm$core$List$length(model.guesses);
@@ -6701,14 +6709,6 @@ var $elm$core$List$repeat = F2(
 	function (n, value) {
 		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$viewEmptyBox = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -6725,6 +6725,8 @@ var $author$project$Main$viewEmptyRow = function (wordLength) {
 			]),
 		A2($elm$core$List$repeat, wordLength, $author$project$Main$viewEmptyBox));
 };
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$viewLetterGuessBox = function (letterGuess) {
 	var classes = function () {
 		var _v0 = letterGuess.result;
@@ -6806,6 +6808,34 @@ var $author$project$Main$viewInputRow = F2(
 								])))
 					])));
 	});
+var $author$project$Main$showBoard = F2(
+	function (model, puzzle) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('board')
+				]),
+			$elm$core$List$concat(
+				_List_fromArray(
+					[
+						A2($elm$core$List$map, $author$project$Main$viewGuessRow, model.guesses),
+						($author$project$Main$remainingGuesses(model) > 0) ? _List_fromArray(
+						[
+							A2($author$project$Main$viewInputRow, model.currentGuess, puzzle.wordLength)
+						]) : _List_Nil,
+						($author$project$Main$remainingGuesses(model) > 1) ? A2(
+						$elm$core$List$repeat,
+						$author$project$Main$remainingGuesses(model) - 1,
+						$author$project$Main$viewEmptyRow(puzzle.wordLength)) : _List_Nil
+					])));
+	});
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var $author$project$Main$view = function (model) {
 	var _v0 = model.appState;
 	switch (_v0.$) {
@@ -6888,27 +6918,10 @@ var $author$project$Main$view = function (model) {
 							[
 								$elm$html$Html$text('Sandwichle')
 							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('board')
-							]),
-						$elm$core$List$concat(
-							_List_fromArray(
-								[
-									A2($elm$core$List$map, $author$project$Main$viewGuessRow, model.guesses),
-									($author$project$Main$remainingGuesses(model) > 0) ? _List_fromArray(
-									[
-										A2($author$project$Main$viewInputRow, model.currentGuess, puzzle.wordLength)
-									]) : _List_Nil,
-									($author$project$Main$remainingGuesses(model) > 1) ? A2(
-									$elm$core$List$repeat,
-									$author$project$Main$remainingGuesses(model) - 1,
-									$author$project$Main$viewEmptyRow(puzzle.wordLength)) : _List_Nil
-								])))
+						A2($author$project$Main$showBoard, model, puzzle)
 					]));
 		case 'CheckingGuess':
+			var puzzle = _v0.a;
 			return A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -6924,6 +6937,7 @@ var $author$project$Main$view = function (model) {
 							[
 								$elm$html$Html$text('Sandwichle')
 							])),
+						A2($author$project$Main$showBoard, model, puzzle),
 						A2(
 						$elm$html$Html$div,
 						_List_Nil,

@@ -39,7 +39,7 @@ type AppState
     | Ready Puzzle
     | CheckingGuess Puzzle
     | Lost
-    | Won
+    | Won Puzzle
 
 type alias Model =
     { appState: AppState
@@ -88,10 +88,7 @@ update msg model =
 
                 EnterKey ->
                     if String.length model.currentGuess == puzzle.wordLength then
-                        let
-                            theGuess = model.currentGuess
-                        in
-                            ({ model | currentGuess = "", appState = CheckingGuess puzzle }, submitGuess puzzle theGuess)
+                        ({ model | appState = CheckingGuess puzzle }, submitGuess puzzle model.currentGuess)
                     else
                         (model, Cmd.none)
 
@@ -103,7 +100,7 @@ update msg model =
                 GuessResultReceived result ->
                     case result of
                         Ok guessResult ->
-                            ({ model | guesses = List.append model.guesses [guessResult], appState = Ready puzzle }, Cmd.none)
+                            ({ model | currentGuess = "", guesses = List.append model.guesses [guessResult], appState = if isWinningGuess guessResult then Won puzzle else Ready puzzle }, Cmd.none)
                         Err errorMessage ->
                             ({ model | appState = Ready puzzle }, Cmd.none)
                 _ ->
@@ -112,6 +109,12 @@ update msg model =
         _ ->
             (model, Cmd.none)
 
+isWinningGuess: GuessResult -> Bool
+isWinningGuess guessResult =
+    List.foldl
+    (\letterGuess carry -> carry && letterGuess.result == RightLetterRightPlace)
+    True
+    guessResult
 
 view : Model -> Html Msg
 view model =
@@ -130,25 +133,30 @@ view model =
         Ready puzzle ->
             div [ class "container" ]
                 [ h1 [] [ text "Sandwichle" ]
-                , div
-                    [ class "board" ]
-                    (
-                        List.concat
-                            [ (List.map viewGuessRow (model.guesses))
-                            , if remainingGuesses model > 0 then [viewInputRow model.currentGuess puzzle.wordLength] else []
-                            , if remainingGuesses model  > 1 then List.repeat (remainingGuesses model  - 1) (viewEmptyRow puzzle.wordLength) else []
-                            ]
-                    )
+                , showBoard model puzzle
                 ]
-        CheckingGuess _ ->
+        CheckingGuess puzzle ->
             div [ class "container" ]
                 [ h1 [] [ text "Sandwichle" ]
+                , showBoard model puzzle
                 , div [] [ img [src "hold-onto-your-butts.gif"] []
                 , div [] [text "Your guess is being checked!"]
                 ]
                 ]
         _ ->
             div [] [text "Not Yet Implemented"]
+
+showBoard : Model -> Puzzle -> Html Msg
+showBoard model puzzle =
+    div
+        [ class "board" ]
+        (
+            List.concat
+                [ (List.map viewGuessRow (model.guesses))
+                , if remainingGuesses model > 0 then [viewInputRow model.currentGuess puzzle.wordLength] else []
+                , if remainingGuesses model > 1 then List.repeat (remainingGuesses model  - 1) (viewEmptyRow puzzle.wordLength) else []
+                ]
+        )
 
 viewGuessRow : GuessResult -> Html Msg
 viewGuessRow letterGuesses =
