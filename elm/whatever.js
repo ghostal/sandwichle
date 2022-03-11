@@ -6601,6 +6601,18 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			case 'FailedToLoad':
+				if (msg.$ === 'PlayAgain') {
+					return _Utils_Tuple2(
+						$author$project$Main$initialModel,
+						$elm$http$Http$get(
+							{
+								expect: A2($elm$http$Http$expectJson, $author$project$Main$GotPuzzle, $author$project$Main$puzzleDecoder),
+								url: 'http://127.0.0.1:8000/api/puzzle/random'
+							}));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			case 'Ready':
 				var puzzle = _v0.a;
 				switch (msg.$) {
@@ -6673,10 +6685,24 @@ var $author$project$Main$update = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			case 'Won':
+				var puzzle = _v0.a;
+				if (msg.$ === 'PlayAgain') {
+					return $author$project$Main$init(_Utils_Tuple0);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			default:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				var puzzle = _v0.a;
+				if (msg.$ === 'PlayAgain') {
+					return $author$project$Main$init(_Utils_Tuple0);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
+var $author$project$Main$PlayAgain = {$: 'PlayAgain'};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6688,6 +6714,23 @@ var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$img = _VirtualDom_node('img');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$core$List$concat = function (lists) {
 	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
 };
@@ -6910,6 +6953,16 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('Sorry, there was an error loading the puzzle.')
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$PlayAgain)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('THE OTHER TEAMS HAVE SABOTAGED OUR PROJECT!!! QUICK, TRY AGAIN!!!')
 							]))
 					]));
 		case 'Ready':
@@ -7006,6 +7059,16 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text('You won! Outstanding! Time to celebrate with a sandwich!')
+									])),
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Main$PlayAgain)
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Try your luck again, champion?')
 									]))
 							]))
 					]));
@@ -7044,7 +7107,17 @@ var $author$project$Main$view = function (model) {
 								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Sorry, champ. I\'m afraid you didn\'t win this time. Can I recommend a commiseratory sandwich?')
+										$elm$html$Html$text('Sorry, champ. I\'m afraid you didn\'t win this time. Have a rejuvenating sandwich and try again!')
+									])),
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Main$PlayAgain)
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('I have eaten a sandwich and mentally prepared myself for another challenge')
 									]))
 							]))
 					]));

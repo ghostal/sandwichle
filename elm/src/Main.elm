@@ -4,6 +4,7 @@ import Browser
 import Browser.Events exposing (onKeyUp)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, map2, field, string, int)
 import Json.Encode as Encode
@@ -15,6 +16,7 @@ type Msg
     | LetterKey Char
     | Backspace
     | EnterKey
+    | PlayAgain
 
 type alias Puzzle =
     { id: Int
@@ -72,6 +74,17 @@ update msg model =
                             ({ model | appState = FailedToLoad errorMessage}, Cmd.none)
                 _ ->
                     (model, Cmd.none)
+        FailedToLoad _ ->
+            case msg of
+                PlayAgain ->
+                    ( initialModel
+                    , Http.get
+                        { url = "http://127.0.0.1:8000/api/puzzle/random"
+                        , expect = Http.expectJson GotPuzzle puzzleDecoder
+                        }
+                    )
+                _ ->
+                    (model, Cmd.none)
         Ready puzzle ->
             case msg of
                 LetterKey char ->
@@ -116,9 +129,19 @@ update msg model =
                             ({ model | appState = Ready puzzle }, Cmd.none)
                 _ ->
                     (model, Cmd.none)
+        Won puzzle ->
+            case msg of
+                PlayAgain ->
+                    init ()
+                _ ->
+                    (model, Cmd.none)
 
-        _ ->
-            (model, Cmd.none)
+        Lost puzzle ->
+            case msg of
+                PlayAgain ->
+                    init ()
+                _ ->
+                    (model, Cmd.none)
 
 isWinningGuess: GuessResult -> Bool
 isWinningGuess guessResult =
@@ -140,6 +163,7 @@ view model =
             div [ class "container" ]
                 [ h1 [] [ text "Sandwichle" ]
                 , div [] [text "Sorry, there was an error loading the puzzle."]
+                , button [onClick PlayAgain] [text "THE OTHER TEAMS HAVE SABOTAGED OUR PROJECT!!! QUICK, TRY AGAIN!!!"]
                 ]
         Ready puzzle ->
             div [ class "container" ]
@@ -161,6 +185,7 @@ view model =
                 , showBoard model puzzle
                 , div [] [ img [src "winner.gif"] []
                 , div [] [text "You won! Outstanding! Time to celebrate with a sandwich!"]
+                , button [onClick PlayAgain] [text "Try your luck again, champion?"]
                 ]
                 ]
 
@@ -170,6 +195,7 @@ view model =
                 , showBoard model puzzle
                 , div [] [ img [src "loser.gif"] []
                 , div [] [text "Sorry, champ. I'm afraid you didn't win this time. Have a rejuvenating sandwich and try again!"]
+                , button [onClick PlayAgain] [text "I have eaten a sandwich and mentally prepared myself for another challenge"]
                 ]
                 ]
 
