@@ -7011,7 +7011,9 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$img,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$src('hold-onto-your-butts.gif')
+										$elm$html$Html$Attributes$src(
+										'guess-' + ($elm$core$String$fromInt(
+											$elm$core$List$length(model.guesses) + 1) + '.gif'))
 									]),
 								_List_Nil),
 								A2(

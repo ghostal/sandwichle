@@ -174,7 +174,7 @@ view model =
             div [ class "container" ]
                 [ h1 [] [ text "Sandwichle" ]
                 , showBoard model puzzle
-                , div [] [ img [src "hold-onto-your-butts.gif"] []
+                , div [] [ img [src ("guess-" ++ String.fromInt ((List.length model.guesses) + 1) ++ ".gif")] []
                 , div [] [text "Your guess is being checked!"]
                 ]
                 ]
