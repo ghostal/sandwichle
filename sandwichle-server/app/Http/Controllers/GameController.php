@@ -26,6 +26,14 @@ class GameController extends Controller
 
     public function start(int $puzzleId = null)
     {
+        if (rand(1,5) === 5) {
+            return new JsonResponse(
+                [
+                    'oh_no' => 'unexpected json response! argh!',
+                ]
+            );
+        }
+
         sleep(3);
 
         if (is_null($puzzleId)) {
@@ -42,6 +50,14 @@ class GameController extends Controller
         $guess = $request->get('guess', '');
 
         $puzzle = $this->getPuzzle($puzzleId);
+
+        if (strtolower($guess) === str_repeat('a', $puzzle->getWordLength())) {
+            return new JsonResponse(
+                [
+                    'oh_no' => 'unexpected json response! argh!',
+                ]
+            );
+        }
 
         $guessResult = $this->getGuessResult($puzzle, $guess);
 

@@ -25,4 +25,9 @@ class Puzzle
     {
         return $this->id;
     }
+
+    public function getWordLength(): int
+    {
+        return $this->wordLength;
+    }
 }
